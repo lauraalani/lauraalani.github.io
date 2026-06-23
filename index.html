@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laura Alani</title>
+  <meta name="description" content="Portfolio of Laura Alani">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header id="header">
+    <a href="#" class="logo">Laura Alani</a>
+    <button id="menu-toggle" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- ── Side Menu ──────────────────────────────────────── -->
+  <div id="menu-panel" role="dialog" aria-label="Navigation">
+    <button id="menu-close" aria-label="Close menu">&#x2715;</button>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#portfolio">Work</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- ── Banner ─────────────────────────────────────────── -->
+  <section id="banner">
+    <h1>Laura Alani</h1>
+    <p class="tagline">Portfolio</p>
+  </section>
+
+  <!-- ── Portfolio Grid ─────────────────────────────────── -->
+  <main id="portfolio">
+    <div class="tiles" id="portfolio-grid">
+      <!-- Populated by main.js from portfolio.js -->
+    </div>
+  </main>
+
+  <!-- ── Contact ────────────────────────────────────────── -->
+  <section id="contact">
+    <h2>Get In Touch</h2>
+    <div class="contact-links">
+      <a href="#" id="footer-email">Email</a>
+      <a href="#" id="footer-instagram">Instagram</a>
+      <a href="#" id="footer-youtube">YouTube</a>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer id="footer">
+    <p id="footer-copy"></p>
+  </footer>
+
+  <!-- ── Modal ──────────────────────────────────────────── -->
+  <div id="modal" role="dialog" aria-modal="true" aria-label="Portfolio item">
+    <div class="modal__inner">
+      <button id="modal-close" aria-label="Close">&times;</button>
+      <div id="modal-body"></div>
+      <div id="modal-info">
+        <h2 id="modal-title"></h2>
+        <p id="modal-desc"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="portfolio.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
