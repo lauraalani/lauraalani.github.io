@@ -5,15 +5,26 @@ const TILE_COLORS = [
 
 let PORTFOLIO = [];
 
+function ytIdFromUrl(str) {
+  const m = str.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : str;
+}
+
 function ytThumb(id) {
   return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
 }
 
 function titleFromPublicId(publicId) {
-  const name = publicId.split('/').pop();          // strip folder prefix
-  const noNum = name.replace(/^\d+[-_]?/, '');     // strip leading number
-  return noNum.replace(/[-_]+/g, ' ')              // dashes/underscores → spaces
-              .replace(/\b\w/g, c => c.toUpperCase()); // Title Case
+  const name = publicId.split('/').pop();
+  const noNum = name.replace(/^\d+[-_]?/, '');
+  return noNum.replace(/[-_]+/g, ' ')
+              .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function orderFromPublicId(publicId) {
+  const name = publicId.split('/').pop();
+  const m = name.match(/^(\d+)/);
+  return m ? parseInt(m[1], 10) : Infinity;
 }
 
 // ── Tile ────────────────────────────────────────────────────
@@ -48,10 +59,17 @@ function buildTile(item, index) {
 async function loadPortfolio() {
   const grid = document.getElementById('portfolio-grid');
 
-  const videos = VIDEOS.map(v => ({ type: 'youtube', ...v }));
+  const videos = VIDEOS.map(v => ({
+    type:        'youtube',
+    id:          ytIdFromUrl(v.url),
+    title:       v.title       || '',
+    category:    v.category    || 'Video',
+    description: v.description || '',
+    _order:      v.order       ?? Infinity,
+  }));
 
   if (!CLOUDINARY.cloud || CLOUDINARY.cloud === 'YOUR_CLOUD_NAME') {
-    PORTFOLIO = videos;
+    PORTFOLIO = videos.sort((a, b) => a._order - b._order);
     render(grid);
     return;
   }
@@ -63,17 +81,17 @@ async function loadPortfolio() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    const images = (data.resources || [])
-      .sort((a, b) => a.public_id.localeCompare(b.public_id))
-      .map(r => ({
-        type:  'image',
-        src:   `https://res.cloudinary.com/${CLOUDINARY.cloud}/image/upload/${r.public_id}.${r.format}`,
-        title: titleFromPublicId(r.public_id),
-        category: 'Photography',
-        description: '',
-      }));
+    const images = (data.resources || []).map(r => ({
+      type:        'image',
+      src:         `https://res.cloudinary.com/${CLOUDINARY.cloud}/image/upload/${r.public_id}.${r.format}`,
+      title:       titleFromPublicId(r.public_id),
+      category:    'Photography',
+      description: '',
+      _order:      orderFromPublicId(r.public_id),
+    }));
 
-    PORTFOLIO = [...images, ...videos];
+    PORTFOLIO = [...images, ...videos]
+      .sort((a, b) => a._order - b._order);
   } catch (err) {
     console.error('Cloudinary fetch failed:', err);
     PORTFOLIO = videos;

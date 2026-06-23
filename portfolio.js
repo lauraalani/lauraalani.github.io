@@ -22,7 +22,13 @@ const CLOUDINARY = {
 };
 
 const VIDEOS = [
-  // { id: 'dQw4w9WgXcQ', title: 'My Film', category: 'Video', description: 'Optional caption' },
+  // {
+  //   url:         'https://www.youtube.com/watch?v=dQw4w9WgXcQ',  // full YouTube link
+  //   title:       'My Film',
+  //   category:    'Video',
+  //   description: 'Optional caption',
+  //   order:       4,   // optional — sits between image 3 and image 5
+  // },
 ];
 
 // ── Contact ──────────────────────────────────────────────────
