@@ -247,29 +247,6 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
-/* ── Grid notices (loading / error / empty) ───────────────── */
-.grid-notice {
-  grid-column: 1 / -1;
-  padding: 5rem 2rem;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-}
-
-.grid-notice--loading {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.grid-notice--error {
-  color: #c0392b;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50%       { opacity: 1;   }
-}
-
 /* ── Modal ────────────────────────────────────────────────── */
 #modal {
   position: fixed;
