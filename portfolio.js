@@ -48,5 +48,4 @@ const PORTFOLIO = [
 const CONTACT = {
   email: 'laura@example.com',        // ← your email
   instagram: '',                      // ← Instagram URL or leave empty
-  youtube: '',                        // ← YouTube channel URL or leave empty
 };

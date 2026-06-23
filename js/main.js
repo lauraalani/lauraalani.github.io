@@ -92,17 +92,13 @@ menuPanel.querySelectorAll('a').forEach(a =>
 function renderContact() {
   const emailEl = document.getElementById('footer-email');
   const igEl    = document.getElementById('footer-instagram');
-  const ytEl    = document.getElementById('footer-youtube');
   const copy    = document.getElementById('footer-copy');
 
   if (CONTACT.email)     { emailEl.href = `mailto:${CONTACT.email}`; emailEl.textContent = CONTACT.email; }
-  else emailEl.closest('li').remove();
+  else emailEl.closest('li') && emailEl.closest('li').remove();
 
   if (CONTACT.instagram) igEl.href = CONTACT.instagram;
   else igEl.closest('li') && igEl.closest('li').remove();
-
-  if (CONTACT.youtube)   ytEl.href = CONTACT.youtube;
-  else ytEl.closest('li') && ytEl.closest('li').remove();
 
   copy.textContent = `© ${new Date().getFullYear()} Laura Alani`;
 }
