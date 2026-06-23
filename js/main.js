@@ -3,9 +3,20 @@ const TILE_COLORS = [
   '#922b21','#1f618d','#7d6608','#4a235a'
 ];
 
+let PORTFOLIO = [];
+
 function ytThumb(id) {
   return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
 }
+
+function titleFromPublicId(publicId) {
+  const name = publicId.split('/').pop();          // strip folder prefix
+  const noNum = name.replace(/^\d+[-_]?/, '');     // strip leading number
+  return noNum.replace(/[-_]+/g, ' ')              // dashes/underscores → spaces
+              .replace(/\b\w/g, c => c.toUpperCase()); // Title Case
+}
+
+// ── Tile ────────────────────────────────────────────────────
 
 function buildTile(item, index) {
   const color   = item.color || TILE_COLORS[index % TILE_COLORS.length];
@@ -32,8 +43,47 @@ function buildTile(item, index) {
   return tile;
 }
 
-function renderGrid() {
+// ── Load ────────────────────────────────────────────────────
+
+async function loadPortfolio() {
   const grid = document.getElementById('portfolio-grid');
+
+  const videos = VIDEOS.map(v => ({ type: 'youtube', ...v }));
+
+  if (!CLOUDINARY.cloud || CLOUDINARY.cloud === 'YOUR_CLOUD_NAME') {
+    PORTFOLIO = videos;
+    render(grid);
+    return;
+  }
+
+  const listUrl = `https://res.cloudinary.com/${CLOUDINARY.cloud}/image/list/${CLOUDINARY.tag}.json`;
+
+  try {
+    const res  = await fetch(listUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    const images = (data.resources || [])
+      .sort((a, b) => a.public_id.localeCompare(b.public_id))
+      .map(r => ({
+        type:  'image',
+        src:   `https://res.cloudinary.com/${CLOUDINARY.cloud}/image/upload/${r.public_id}.${r.format}`,
+        title: titleFromPublicId(r.public_id),
+        category: 'Photography',
+        description: '',
+      }));
+
+    PORTFOLIO = [...images, ...videos];
+  } catch (err) {
+    console.error('Cloudinary fetch failed:', err);
+    PORTFOLIO = videos;
+  }
+
+  render(grid);
+}
+
+function render(grid) {
+  grid.innerHTML = '';
   PORTFOLIO.forEach((item, i) => grid.appendChild(buildTile(item, i)));
 }
 
@@ -112,5 +162,5 @@ function renderContact() {
   copy.textContent = `© ${new Date().getFullYear()} Laura Alani`;
 }
 
-renderGrid();
+loadPortfolio();
 renderContact();

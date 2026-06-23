@@ -1,33 +1,28 @@
 // ============================================================
-//  LAURA ALANI — PORTFOLIO CONTENT
-//  Edit this file to add, remove, or reorder items.
-//  Then commit and push — the site updates automatically.
+//  LAURA ALANI — PORTFOLIO CONFIGURATION
 // ============================================================
 //
-//  To add a PHOTO (upload to Cloudinary first, then paste the URL):
-//  { type: 'image', src: 'https://res.cloudinary.com/YOUR_CLOUD/image/upload/photo.jpg', title: 'Title', category: 'Photography', description: 'Optional caption' }
+//  PHOTOS (one-time Cloudinary setup):
+//  1. Go to cloudinary.com → Settings → Security
+//  2. Enable "Resource list" → Save
+//  3. Paste your cloud name below
+//  4. Upload photos to Cloudinary and tag them "portfolio"
+//     (select photos → right-click → Manage tags → add "portfolio")
+//  → All tagged photos appear on the site automatically.
 //
-//  To add a YOUTUBE VIDEO (paste only the ID — the part after ?v= in the URL):
-//  { type: 'youtube', id: 'dQw4w9WgXcQ', title: 'Title', category: 'Video', description: 'Optional caption' }
+//  To control order: prefix filenames with numbers before uploading
+//  e.g.  01-landscape.jpg, 02-portrait.jpg
 //
-//  Optional: add  color: '#8e44ad'  to any item to set the tile background color.
+//  VIDEOS — add YouTube video IDs to the list below:
 // ============================================================
 
-const PORTFOLIO = [
-  {
-    type: 'youtube',
-    id: 'dQw4w9WgXcQ',
-    title: 'Sample Video',
-    category: 'Video',
-    description: 'Replace with your YouTube video ID.',
-  },
-  {
-    type: 'image',
-    src: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
-    title: 'Sample Photo',
-    category: 'Photography',
-    description: 'Replace with your Cloudinary image URL.',
-  },
+const CLOUDINARY = {
+  cloud: 'YOUR_CLOUD_NAME',   // ← paste your Cloudinary cloud name here
+  tag:   'portfolio',          // ← tag your photos with this in Cloudinary
+};
+
+const VIDEOS = [
+  // { id: 'dQw4w9WgXcQ', title: 'My Film', category: 'Video', description: 'Optional caption' },
 ];
 
 // ── Contact ──────────────────────────────────────────────────
