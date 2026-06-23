@@ -247,6 +247,31 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
+/* ── Category divider ─────────────────────────────────────── */
+.category-divider {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 3rem 2rem 1rem;
+}
+
+.category-divider::before,
+.category-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+}
+
+.category-divider span {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
 /* ── Modal ────────────────────────────────────────────────── */
 #modal {
   position: fixed;

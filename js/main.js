@@ -14,17 +14,31 @@ function ytThumb(id) {
   return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
 }
 
-function titleFromPublicId(publicId) {
-  const name = publicId.split('/').pop();
-  const noNum = name.replace(/^\d+[-_]?/, '');
-  return noNum.replace(/[-_]+/g, ' ')
-              .replace(/\b\w/g, c => c.toUpperCase());
+// "1-animation" → { label: "Animation", order: 1 }
+// "forest"      → { label: "Forest",    order: Infinity }
+function parsePrefixed(str) {
+  if (!str) return { label: '', order: Infinity };
+  const m = str.match(/^(\d+)[-_]?(.*)/);
+  const raw = m ? m[2] : str;
+  return {
+    order: m ? parseInt(m[1], 10) : Infinity,
+    label: raw.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || str,
+  };
 }
 
-function orderFromPublicId(publicId) {
-  const name = publicId.split('/').pop();
-  const m = name.match(/^(\d+)/);
-  return m ? parseInt(m[1], 10) : Infinity;
+// "1-animation/03-forest" → { title, itemOrder, category, categoryOrder }
+function parsePublicId(publicId) {
+  const parts   = publicId.split('/');
+  const file    = parts[parts.length - 1];
+  const folder  = parts.length >= 2 ? parts[parts.length - 2] : '';
+  const cat     = parsePrefixed(folder);
+  const item    = parsePrefixed(file);
+  return {
+    title:         item.label,
+    itemOrder:     item.order,
+    category:      cat.label,
+    categoryOrder: cat.order,
+  };
 }
 
 // ── Tile ────────────────────────────────────────────────────
@@ -59,17 +73,25 @@ function buildTile(item, index) {
 async function loadPortfolio() {
   const grid = document.getElementById('portfolio-grid');
 
-  const videos = VIDEOS.map(v => ({
-    type:        'youtube',
-    id:          ytIdFromUrl(v.url),
-    title:       v.title       || '',
-    category:    v.category    || 'Video',
-    description: v.description || '',
-    _order:      v.order       ?? Infinity,
-  }));
+  const videos = VIDEOS.map(v => {
+    const cat = parsePrefixed(v.category || '');
+    return {
+      type:          'youtube',
+      id:            ytIdFromUrl(v.url),
+      title:         v.title       || '',
+      category:      cat.label,
+      categoryOrder: cat.order,
+      description:   v.description || '',
+      _order:        v.order       ?? Infinity,
+    };
+  });
 
   if (!CLOUDINARY.cloud || CLOUDINARY.cloud === 'YOUR_CLOUD_NAME') {
-    PORTFOLIO = videos.sort((a, b) => a._order - b._order);
+    PORTFOLIO = videos.sort((a, b) =>
+      a.categoryOrder !== b.categoryOrder
+        ? a.categoryOrder - b.categoryOrder
+        : a._order - b._order
+    );
     render(grid);
     return;
   }
@@ -81,17 +103,24 @@ async function loadPortfolio() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    const images = (data.resources || []).map(r => ({
-      type:        'image',
-      src:         `https://res.cloudinary.com/${CLOUDINARY.cloud}/image/upload/${r.public_id}.${r.format}`,
-      title:       titleFromPublicId(r.public_id),
-      category:    'Photography',
-      description: '',
-      _order:      orderFromPublicId(r.public_id),
-    }));
+    const images = (data.resources || []).map(r => {
+      const p = parsePublicId(r.public_id);
+      return {
+        type:          'image',
+        src:           `https://res.cloudinary.com/${CLOUDINARY.cloud}/image/upload/${r.public_id}.${r.format}`,
+        title:         p.title,
+        category:      p.category,
+        categoryOrder: p.categoryOrder,
+        description:   '',
+        _order:        p.itemOrder,
+      };
+    });
 
-    PORTFOLIO = [...images, ...videos]
-      .sort((a, b) => a._order - b._order);
+    PORTFOLIO = [...images, ...videos].sort((a, b) =>
+      a.categoryOrder !== b.categoryOrder
+        ? a.categoryOrder - b.categoryOrder
+        : a._order - b._order
+    );
   } catch (err) {
     console.error('Cloudinary fetch failed:', err);
     PORTFOLIO = videos;
@@ -102,7 +131,21 @@ async function loadPortfolio() {
 
 function render(grid) {
   grid.innerHTML = '';
-  PORTFOLIO.forEach((item, i) => grid.appendChild(buildTile(item, i)));
+
+  const cats = [...new Set(PORTFOLIO.map(i => i.category).filter(Boolean))];
+  const showHeaders = cats.length >= 2;
+
+  let lastCat = null;
+  PORTFOLIO.forEach((item, index) => {
+    if (showHeaders && item.category !== lastCat) {
+      const div = document.createElement('div');
+      div.className = 'category-divider';
+      div.innerHTML = `<span>${item.category}</span>`;
+      grid.appendChild(div);
+      lastCat = item.category;
+    }
+    grid.appendChild(buildTile(item, index));
+  });
 }
 
 // ── Modal ────────────────────────────────────────────────────

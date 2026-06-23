@@ -25,9 +25,9 @@ const VIDEOS = [
   // {
   //   url:         'https://www.youtube.com/watch?v=dQw4w9WgXcQ',  // full YouTube link
   //   title:       'My Film',
-  //   category:    'Video',
+  //   category:    '1-Animation',  // prefix sets category order, "1-Animation" → "Animation" in category 1
   //   description: 'Optional caption',
-  //   order:       4,   // optional — sits between image 3 and image 5
+  //   order:       4,              // position within the category (same numbering as image filenames)
   // },
 ];
 
